@@ -16,3 +16,8 @@
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->group(['prefix' => 'api/characters'], function () use ($router) {
+    $router->get('/', 'CharactersController@AllCharacters');
+    $router->get('/{characterId}', 'CharactersController@Character');
+});
