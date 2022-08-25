@@ -37,7 +37,7 @@ const CharacterList = (offset = 0) =>{
     const [perPage, setPerPage] = useState(10);
 
     useEffect(() => {
-        fetchData(1, perPage);
+        fetchData(0, perPage);
     }, [perPage])
 
     const fetchData = async (page, per_page) => {
@@ -57,7 +57,7 @@ const CharacterList = (offset = 0) =>{
     }
 
     const handlePageChange = page => {
-        fetchData((page - 1) *20 , perPage);
+        fetchData((page - 1) * perPage , perPage);
     }
 
     const handlePerRowsChange = async (newPerPage, page) => {
