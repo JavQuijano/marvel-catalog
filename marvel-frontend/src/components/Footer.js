@@ -1,10 +1,10 @@
 import React from 'react'
+import './Footer.css'
 
-
-const Footer = ({children}) =>{
+const Footer = () =>{
     return (
-        <div>
-            This is the Footer
+        <div className='footer'>
+            Marvel API Character Listing
         </div>
       )
 }

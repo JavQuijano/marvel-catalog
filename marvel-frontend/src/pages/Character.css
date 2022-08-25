@@ -1,0 +1,16 @@
+.character-specific-container{
+    margin:5rem 10rem;
+}
+
+@media only screen and (max-width: 1000px){
+    .character-specific-container{
+        margin:2rem;
+    }
+    
+}
+.img-container{
+    position: relative;
+}
+.hero-thumbnail{
+    width: 100%;
+}

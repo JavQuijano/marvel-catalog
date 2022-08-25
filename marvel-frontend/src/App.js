@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes , Route } from 'react-router-dom';
 import CharacterList from './pages/CharacterList'
 import Character from './pages/Character'
 import Layout from './components/Layout'
+import './App.css'
 
 function App() {
   return (

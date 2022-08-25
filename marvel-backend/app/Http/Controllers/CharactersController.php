@@ -9,18 +9,21 @@ class CharactersController extends BaseController
 
     private $marvel_characters_uri = 'https://gateway.marvel.com:443/v1/public/characters';
 
+    public function __construct(){
+        //$debug = env('APP_DEBUG', true);
+    }
+
     public function AllCharacters(){
         $ts = time();
-        $hash = md5($ts.$_ENV['MARVEL_PRIVATE_KEY'].$_ENV['MARVEL_PUBLIC_KEY']);
+        $hash = md5($ts.env('MARVEL_PRIVATE_KEY').env('MARVEL_PUBLIC_KEY'));
         $query = array(
-            "limit"  => 20,
-            "apikey" => $_ENV['MARVEL_PUBLIC_KEY'],
+            "limit"  => \htmlentities(\strtolower($_GET['perPage'])),
+            "apikey" => env('MARVEL_PUBLIC_KEY'),
             "ts"     => $ts,
             "hash"   => $hash
         );
-        if(isset($_GET['offset'])){
-            $query['offset'] = \htmlentities(\strtolower($_GET['offset']));
-        }
+        $query['offset'] = \htmlentities(\strtolower($_GET['offset']));
+        
         $url = $this->marvel_characters_uri.'?'.http_build_query($query);
         $curl_result = $this->ApiRequest($url, $query);
         
@@ -31,7 +34,7 @@ class CharactersController extends BaseController
             return $i['thumbnail']['path'].'.'.$i['thumbnail']['extension'];
         }, $curl_result["data"]["results"]);
 
-        $result_array =  array_map(function ($id, $name, $thumbnail,$uri) {
+        $data_array =  array_map(function ($id, $name, $thumbnail,$uri) {
             return array(
                 'id'       => $id,
                 'name'     => $name,
@@ -39,22 +42,35 @@ class CharactersController extends BaseController
                 'uri'      => $uri
             );
         }, $character_ids,$character_names,$character_thumbnails, $character_uris);
-        
+        $result_array['data'] = $data_array;
+        $result_array['total'] = $curl_result["data"]["total"];
         return json_encode($result_array, JSON_UNESCAPED_SLASHES);
     }
     
     public function Character($characterId){
         $ts = time();
-        $hash = md5($ts.$_ENV['MARVEL_PRIVATE_KEY'].$_ENV['MARVEL_PUBLIC_KEY']);
+        $hash = md5($ts.env('MARVEL_PRIVATE_KEY').env('MARVEL_PUBLIC_KEY'));
         $query = array(
-            "apikey" => $_ENV['MARVEL_PUBLIC_KEY'],
+            "apikey" => env('MARVEL_PUBLIC_KEY'),
             "ts"     => $ts,
             "hash"   => $hash
         );
         $url = $this->marvel_characters_uri.'/'.$characterId.'?'.http_build_query($query);
-        $curl_result = $this->ApiRequest($url, $query);
-        
-        return $curl_result;
+        $curl_result = $this->ApiRequest($url, $query)["data"]["results"][0];
+        $result = array(
+            "data" => array(
+                "id" => $curl_result["id"],
+                "name" => $curl_result["name"],
+                "description" => $curl_result["description"],
+                "thumbnail" => $curl_result["thumbnail"]["path"].".".$curl_result["thumbnail"]["extension"],
+                "available_comics" => $curl_result["comics"]["available"],
+                "available_series" => $curl_result["series"]["available"],
+                "available_stories" => $curl_result["stories"]["available"],
+                "available_events" => $curl_result["events"]["available"],
+                "marvel_url" => $curl_result["urls"][array_search("detail", array_column($curl_result["urls"], 'type'))]["url"]
+            )
+        );
+        return json_encode($result, JSON_UNESCAPED_SLASHES);
     }
 
     private function ApiRequest($url, $query){

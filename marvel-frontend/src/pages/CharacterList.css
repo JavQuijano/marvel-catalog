@@ -1,0 +1,22 @@
+.character-list-table{
+    margin:5rem 10rem;
+}
+@media only screen and (max-width: 600px){
+    .character-list-table{ 
+        margin:2rem;
+    }
+}
+
+@media only screen and (max-width: 1000px){
+    .character-list-table{ 
+        margin:2rem;
+    }
+}
+.rdt_Table{
+    z-index:1;
+}
+.btn-link{
+    text-decoration: none;
+    color: white;
+    margin: 0;
+}
